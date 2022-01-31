@@ -1,27 +1,23 @@
 const express = require('express');
 
 const app = express();
+const port = 3000;
 
-app.get(['/','/index'],function(request,response) {
-    response.send('<h1> Hello in our first Rest app </h1>');
+let students = [
+    {id :1 , name : 'student1'},
+    {id :2 , name : 'student2'},
+    {id :3 , name : 'student3'}
+]
+
+app.get('/api/students', (req,res)=>{
+    res.send(students);
 });
 
-app.post(['/','/index'],function(request,response) {
-    response.send('<h1> Hello in our first Rest app VIA POST </h1>');
+app.get('/api/students/:id',(req,res)=>{
+    const student = students.find(s=>s.id === parseInt(req.params.id));
+    if (!student)
+        return res.status(404).send('The given id is not found');
+    res.send(student);
 });
 
-let quotes = {
-    'einstein': 'We cannot solve our problems with the same thinking we used when we created them.',
-    'tesla': 'The scientists of today think deeply instead of clearly. One must be sane to think clearly, but one can think deeply and be quite insane.'
-};
-
-app.get('/quotes/:name', (request,response) => {
-    response.send(quotes[request.params.name]);
-});
-
-app.get('/posts/:month/:year', (request,response) => {
-    response.send('posts of : ' + JSON.stringify(request.params));
-});
-app.listen(3000,function () {
-    console.log('Listen on 3000');
-});
+app.listen(port, ()=> console.log(`Server running on ${port}...`));
