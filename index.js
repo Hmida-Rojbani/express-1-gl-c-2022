@@ -1,4 +1,5 @@
 const express = require('express');
+const Joi = require('joi');
 
 const app = express();
 const port = 3000;
@@ -18,6 +19,28 @@ app.get('/api/students/:id',(req,res)=>{
     if (!student)
         return res.status(404).send('The given id is not found');
     res.send(student);
+});
+app.use(express.json());
+const valid_schema = Joi.object({
+    name : Joi.string().min(3).pattern(new RegExp('^[a-zA-Z]{3,}$')).required()
+});
+app.post('/api/students', (req,res)=>{
+    // if(! req.body.name)
+    //     return res.status(400).send('Name is required.');
+    // if(req.body.name.length < 3)
+    //     return res.status(400).send('Name length must be over 3 chars.');
+    let valid_results = valid_schema.validate(req.body);
+    if(valid_results.error)
+        return res.status(400).send(valid_results.error.details[0].message);
+    let student = {
+        id : students.length+1,
+        name: req.body.name
+    };
+    students.push(student);
+    res.send(student);
+});
+
+app.put('/api/students/:id',(req,res)=>{
 });
 
 app.listen(port, ()=> console.log(`Server running on ${port}...`));
