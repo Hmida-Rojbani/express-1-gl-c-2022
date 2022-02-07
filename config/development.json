@@ -1,0 +1,6 @@
+{
+    "app-name":"STUDENT_API_DEV",
+    "DB" : {
+        "host":"ip local"
+    }
+}

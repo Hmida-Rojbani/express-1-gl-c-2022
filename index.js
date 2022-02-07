@@ -1,8 +1,23 @@
 const express = require('express');
 const Joi = require('joi');
+const morgan = require('morgan');
+const config = require('config');
+const appDebug = require('debug')('app:debug');
+const dbDebug = require('debug')('app:db');
+
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+
+appDebug(app.get('env'));
+appDebug('App name :',config.get('app-name'));
+dbDebug('DB host :',config.get('DB.host'));
+dbDebug('DB pass :',config.get('DB.password'));
+if(app.get('env') === 'development'){
+    app.use(morgan('dev'));
+}
+
 
 let students = [
     {id :1 , name : 'student1'},
@@ -20,6 +35,12 @@ app.get('/api/students/:id',(req,res)=>{
         return res.status(404).send('The given id is not found');
     res.send(student);
 });
+// app.use((req,res,next) => {
+//     console.log('Auth');
+//     if(!req.headers.authorization)
+//         return res.status(403).send('Must Auth');
+//     next();
+// });
 app.use(express.json());
 const valid_schema = Joi.object({
     name : Joi.string().min(3).pattern(new RegExp('^[a-zA-Z]{3,}$')).required()
@@ -59,4 +80,4 @@ app.delete('/api/students/:id',(req,res)=>{
     res.send(student);
 });
 
-app.listen(port, ()=> console.log(`Server running on ${port}...`));
+app.listen(port, ()=> appDebug(`Server running on ${port}...`));
