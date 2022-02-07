@@ -41,6 +41,22 @@ app.post('/api/students', (req,res)=>{
 });
 
 app.put('/api/students/:id',(req,res)=>{
+    let student = students.find(s=>s.id === parseInt(req.params.id));
+    if (!student)
+        return res.status(404).send('The given id is not found');
+    let valid_results = valid_schema.validate(req.body);
+    if(valid_results.error)
+        return res.status(400).send(valid_results.error.details[0].message);
+    student.name=req.body.name;
+    res.send(student);
+});
+
+app.delete('/api/students/:id',(req,res)=>{
+    const student = students.find(s=>s.id === parseInt(req.params.id));
+    if (!student)
+        return res.status(404).send('The given id is not found');
+    students = students.filter(s=>s.id !== parseInt(req.params.id))
+    res.send(student);
 });
 
 app.listen(port, ()=> console.log(`Server running on ${port}...`));
